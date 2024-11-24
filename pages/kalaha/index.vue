@@ -1,5 +1,5 @@
 <template>
     <div>
-        <MancalaPlatform />
+        <KalahaPlatform />
     </div>
 </template>
