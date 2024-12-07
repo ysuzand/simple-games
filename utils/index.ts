@@ -1,1 +1,1 @@
-export const wait = (time = 1000) => setTimeout(() => {console.log('waiting')}, time)
+export const wait = async (time = 1000) => setTimeout(() => {Promise.resolve(console.log('waiting'))}, time)

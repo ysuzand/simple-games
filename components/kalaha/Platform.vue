@@ -6,6 +6,9 @@
         <KalahaPitsRow whoseRow="a" :rowData="playerA" @selected="run" :selectedPit="selectedPit" />
         <KalahaPitsRow whoseRow="b" :rowData="playerB" @selected="run" :selectedPit="selectedPit" />
         <p>Current player: {{ currentPlayer === 'a' ? first : second }}</p>
+        <div>
+            <span v-for="stone in stonesUi">*</span>
+        </div>
     </div>
 </template>
 <script setup lang="ts">
@@ -60,23 +63,32 @@ const lastPit = ref(0);
 
 let timer: ReturnType<typeof setTimeout> | null = null;
 
-onUnmounted(() => {
-    if (!!timer) {
-        clearTimeout(timer);
-    }
-});
+// onUnmounted(() => {
+//     if (!!timer) {
+//         clearTimeout(timer);
+//     }
+// });
 
-const _handleRotation = (selectedPit: `${number}`) => {
+const stonesInHand = ref(0);
+const stonesUi = computed(() => Array.from({ length: stonesInHand.value }));
+
+const _handleRotation = async (selectedPit: `${number}`) => {
     // Hold stones in hand.
-    let numOfStones = stonesPosition[selectedPit];
+    stonesInHand.value = stonesPosition[selectedPit];
     // Empty pit where you pick up stones.
     stonesPosition[selectedPit] = 0;
 
     let pitToSaw = +selectedPit + 1;
-    const tempPitIndex = +selectedPit + numOfStones;
+    const tempPitIndex = +selectedPit + stonesInHand.value;
     lastPit.value = tempPitIndex > 14 ? tempPitIndex % 14 : tempPitIndex;
 
-    while (numOfStones) {
+    const timer = setInterval(async () => {
+        if (stonesInHand.value === 0) {
+            clearInterval(timer);
+            return;
+        }
+        console.log(stonesInHand.value);
+        console.log(`pit to saw: ${pitToSaw}`);
         if (currentPlayer.value === 'a' && pitToSaw === 14) {
             pitToSaw = 1;
         } else if (currentPlayer.value === 'b' && pitToSaw === 7) {
@@ -91,9 +103,9 @@ const _handleRotation = (selectedPit: `${number}`) => {
                 pitToSaw++;
             }
 
-            numOfStones--;
+            stonesInHand.value--;
         }
-    }
+    }, 800);
 };
 
 const _findPairPit = () => {
@@ -141,13 +153,20 @@ const _pickUpOpponentStonesToAddYourStore = (opponentPit: number | null) => {
     }
 };
 
-const run = ({ pitPosition }: EmitSelectedPayloadType) => {
-    _handleRotation(pitPosition);
-    if (!_isFinishInStore()) {
-        console.log('not finish in store');
-        const check = _checkIfYouTakeOpponentStones();
-        _pickUpOpponentStonesToAddYourStore(check);
+watch(stonesInHand, (val) => {
+    if (val === 0) {
+        // When the player finishes placing stone,
+        // check if the last stone was placed in an empty pit.
+        if (!_isFinishInStore()) {
+            const check = _checkIfYouTakeOpponentStones();
+            _pickUpOpponentStonesToAddYourStore(check);
+        }
+        // Check if players should be changed.
         currentPlayer.value = _checkTurn();
     }
+});
+
+const run = async ({ pitPosition }: EmitSelectedPayloadType) => {
+    _handleRotation(pitPosition);
 };
 </script>

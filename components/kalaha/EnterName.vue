@@ -1,6 +1,5 @@
 <template>
     <div>Enter Player Names</div>
-
     <label for="player-a">Player 1</label>
     <input id="player-a"
            type="text"
@@ -21,7 +20,6 @@
 <script setup lang="ts">
 const playerA = defineModel('playerA');
 const playerB = defineModel('palyerB');
-
 const emit = defineEmits<{
     start: [boolean];
 }>();
