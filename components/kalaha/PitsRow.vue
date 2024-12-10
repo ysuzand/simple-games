@@ -8,16 +8,19 @@
                     :class="[(selectedPit?.pitPosition === pitPosition)
                         ? 'bg-green-300'
                         : 'bg-white',
+                    whoseRow !== currentPlayer
+                    && 'text-gray-400',
                     error?.pitPosition === pitPosition && currentPlayer !== error.whoseRow && 'bg-red-400',
                     whoseRow === 'b' ? 'border border-blue-500' : 'border border-amber-600'
                     ]"
                     :ariaLabel="'pit id of ' + pitPosition"
+                    :disabled="whoseRow !== currentPlayer"
                     @click="() => run({ whoseRow, pitPosition })">
-                <div>{{ whoseRow }}: pit: {{ pitPosition }}</div>
+                <div>pit: {{ pitPosition }}</div>
                 <div class="text-xl font-bold">{{ value }}</div>
             </button>
             <div v-else class="border rounded flex flex-col justify-center items-center w-24 bg-slate-600 text-white">
-                <div>{{ whoseRow }}: store: {{ pitPosition }}</div>
+                <div>store: {{ pitPosition }}</div>
                 <div class="text-xl font-bold">{{ value }}</div>
             </div>
         </li>
