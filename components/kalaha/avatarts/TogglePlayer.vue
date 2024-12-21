@@ -1,19 +1,19 @@
 <template>
     <div class="relative h-80">
         <Transition mode="out-in">
-            <div v-if="currentPlayer === 'a'" class="absolute flex mt-6">
+            <div v-if="hasWinner === 'a' || currentPlayer === 'a'" class="absolute flex mt-6">
                 <KalahaAvatartsPlayerA />
                 <div v-show="!hasWinner"
                      class="pop type-a bg-white border border-orange-400 h-fit py-3 px-6 rounded-md font-mono">
-                    It's your turn, {{ playerName.a }}
+                    It's your turn, <b>{{ playerName.a }}</b>
                 </div>
             </div>
-            <div v-else class="absolute flex mt-6">
-                <KalahaAvatartsPlayerB />
+            <div v-else-if="hasWinner === 'b' || currentPlayer === 'b'" class="absolute flex mt-6 right-0">
                 <div v-show="!hasWinner"
                      class="pop type-b bg-white border border-blue-400 h-fit py-3 px-6 rounded-md font-mono">
-                    It's your turn, {{ playerName.b }}
+                    It's your turn, <b>{{ playerName.b }}</b>
                 </div>
+                <KalahaAvatartsPlayerB />
             </div>
         </Transition>
     </div>
@@ -52,19 +52,23 @@ defineProps<{
         height: 0.75rem;
         background-color: white;
         position: absolute;
-        left: -0.4rem;
+
         top: 1rem;
-        transform: rotate(45deg);
+
     }
 
     &.type-a::before {
         border-left: 1px solid orange;
         border-bottom: 1px solid orange;
+        left: -0.4rem;
+        transform: rotate(45deg);
     }
 
     &.type-b::before {
         border-left: 1px solid rgb(96, 165, 250);
         border-bottom: 1px solid rgb(96, 165, 250);
+        transform: rotate(-135deg);
+        right: -0.4rem;
     }
 }
 </style>

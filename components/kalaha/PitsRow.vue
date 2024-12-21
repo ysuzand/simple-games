@@ -5,23 +5,21 @@
             <button v-if="!store.includes(pitPosition)"
                     type="button"
                     class="border rounded flex flex-col justify-center items-center w-24 h-24"
-                    :class="[(selectedPit?.pitPosition === pitPosition)
-                        ? 'bg-green-300'
-                        : 'bg-white',
-                    whoseRow !== currentPlayer
-                    && 'text-gray-400',
-                    error?.pitPosition === pitPosition && currentPlayer !== error.whoseRow && 'bg-red-400',
-                    whoseRow === 'b' ? 'border border-blue-500 bg-sky-100' : 'border border-amber-600 bg-orange-100'
+                    :class="[
+                        whoseRow !== currentPlayer
+                        && 'text-gray-400',
+                        error?.pitPosition === pitPosition && currentPlayer !== error.whoseRow && 'bg-red-400',
+                        whoseRow === 'b' ? 'border border-blue-500 bg-sky-100' : 'border border-amber-600 bg-orange-100'
                     ]"
                     :ariaLabel="'pit id of ' + pitPosition"
-                    :disabled="whoseRow !== currentPlayer"
+                    :disabled="isDisabled || whoseRow !== currentPlayer"
                     @click="() => run({ whoseRow, pitPosition })">
                 <div>pit: {{ pitPosition }}</div>
                 <div class="text-xl font-bold">{{ value }}</div>
             </button>
             <div v-else
                  :class="[whoseRow === 'b' ? 'bg-cyan-700' : 'bg-amber-600']"
-                 class="border rounded flex flex-col justify-center items-center  w-24 h-24 bg-slate-600 text-white">
+                 class="border rounded flex flex-col justify-center items-center  w-24 h-24 text-white">
                 <div>store: {{ pitPosition }}</div>
                 <div class="text-xl font-bold">{{ value }}</div>
             </div>
@@ -37,6 +35,7 @@ defineProps<{
     whoseRow: PlayerType;
     rowData: Record<keyof PlayerBoardData, number>;
     selectedPit: EmitSelectedPayloadType | null;
+    isDisabled?: boolean;
 }>();
 
 const emit = defineEmits<{

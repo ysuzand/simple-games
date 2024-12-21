@@ -3,16 +3,19 @@
         currentPlayer === 'a' ? 'bg-amber-200' : 'bg-blue-200',
         !hasStarted && 'bg-white']"
          class="flex  justify-center">
-        <KalahaEnterName v-if="!hasStarted" v-model:playerA="first" v-model:palyerB="second"
+        <KalahaEnterName v-if="!hasStarted" v-model:playerA="first" v-model:playerB="second"
                          @start="(val: boolean) => (hasStarted = val)" />
         <div v-else class="w-fit">
             <div class="text-green-500">Kalaha</div>
+            <Button v-show="!!hasWinner" type="button" class="h-12 mb-2" @click="hasStarted = false">Reset</Button>
             <div v-if="hasWinner">Game over: {{ hasWinner === 'a' ? first : second }} won!</div>
             <div class="flex h-8 gap-2">
-                <div v-for="stone in stonesUi" class="w-4 h-4 bg-purple-800 rounded-full"></div>
+                <div v-for="stone in stonesUi"><img src="/public/assets/coin.svg" /></div>
             </div>
-            <KalahaPitsRow whoseRow="a" :rowData="playerRowA" @selected="run" :selectedPit="selectedPit" />
-            <KalahaPitsRow whoseRow="b" :rowData="playerRowB" @selected="run" :selectedPit="selectedPit" />
+            <KalahaPitsRow whoseRow="a" :rowData="playerRowA" @selected="run" :selectedPit="selectedPit"
+                           :is-disabled="!!hasWinner" />
+            <KalahaPitsRow whoseRow="b" :rowData="playerRowB" @selected="run" :selectedPit="selectedPit"
+                           :is-disabled="!!hasWinner" />
             <KalahaAvatartsTogglePlayer :playerName="{ a: first, b: second }" :hasWinner="hasWinner" />
         </div>
     </div>
@@ -26,6 +29,7 @@ const hasStarted = ref(false);
 const STONES_PER_PIT = 4;
 const currentPlayer = ref<PlayerType>('a');
 provide('currentPlayer', currentPlayer);
+
 const stonesPosition = reactive<PlayerBoardData>({
     1: STONES_PER_PIT,
     2: STONES_PER_PIT,

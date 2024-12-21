@@ -1,6 +1,6 @@
 <template>
 	<component :is="tag"
-						 class="rounded text-blue-100 text-xl font-bold py-4 px-8">
+			   class="rounded text-xl font-bold py-2 px-8 border border-slate-500">
 		<slot />
 	</component>
 </template>
