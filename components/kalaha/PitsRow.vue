@@ -11,7 +11,7 @@
                     whoseRow !== currentPlayer
                     && 'text-gray-400',
                     error?.pitPosition === pitPosition && currentPlayer !== error.whoseRow && 'bg-red-400',
-                    whoseRow === 'b' ? 'border border-blue-500' : 'border border-amber-600'
+                    whoseRow === 'b' ? 'border border-blue-500 bg-sky-100' : 'border border-amber-600 bg-orange-100'
                     ]"
                     :ariaLabel="'pit id of ' + pitPosition"
                     :disabled="whoseRow !== currentPlayer"
@@ -19,7 +19,9 @@
                 <div>pit: {{ pitPosition }}</div>
                 <div class="text-xl font-bold">{{ value }}</div>
             </button>
-            <div v-else class="border rounded flex flex-col justify-center items-center w-24 bg-slate-600 text-white">
+            <div v-else
+                 :class="[whoseRow === 'b' ? 'bg-cyan-700' : 'bg-amber-600']"
+                 class="border rounded flex flex-col justify-center items-center  w-24 h-24 bg-slate-600 text-white">
                 <div>store: {{ pitPosition }}</div>
                 <div class="text-xl font-bold">{{ value }}</div>
             </div>

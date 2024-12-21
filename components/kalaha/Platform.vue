@@ -13,7 +13,6 @@
             </div>
             <KalahaPitsRow whoseRow="a" :rowData="playerRowA" @selected="run" :selectedPit="selectedPit" />
             <KalahaPitsRow whoseRow="b" :rowData="playerRowB" @selected="run" :selectedPit="selectedPit" />
-
             <KalahaAvatartsTogglePlayer :playerName="{ a: first, b: second }" :hasWinner="hasWinner" />
         </div>
     </div>
@@ -24,23 +23,23 @@ import type { EmitSelectedPayloadType, PlayerBoardData, PlayerType } from './typ
 const first = ref('Player A');
 const second = ref('Player B');
 const hasStarted = ref(false);
-
+const STONES_PER_PIT = 4;
 const currentPlayer = ref<PlayerType>('a');
 provide('currentPlayer', currentPlayer);
 const stonesPosition = reactive<PlayerBoardData>({
-    1: 4,
-    2: 4,
-    3: 4,
-    4: 4,
-    5: 4,
-    6: 4,
+    1: STONES_PER_PIT,
+    2: STONES_PER_PIT,
+    3: STONES_PER_PIT,
+    4: STONES_PER_PIT,
+    5: STONES_PER_PIT,
+    6: STONES_PER_PIT,
     7: 0, // store of A
-    8: 4,
-    9: 4,
-    10: 4,
-    11: 4,
-    12: 4,
-    13: 4,
+    8: STONES_PER_PIT,
+    9: STONES_PER_PIT,
+    10: STONES_PER_PIT,
+    11: STONES_PER_PIT,
+    12: STONES_PER_PIT,
+    13: STONES_PER_PIT,
     14: 0 // store of B
 });
 

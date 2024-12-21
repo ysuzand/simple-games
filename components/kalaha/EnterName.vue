@@ -6,6 +6,7 @@
             <input id="player-a"
                    type="text"
                    v-model="playerA"
+                   placeholder="Player A"
                    class="border-2 border-amber-600 rounded p-2" />
         </div>
         <div>
@@ -13,6 +14,7 @@
             <input id="palyer-b"
                    type="text"
                    v-model="playerB"
+                   placeholder="Player B"
                    class="border-2 border-blue-500 rounded p-2" />
         </div>
         <button type="button"
@@ -23,8 +25,8 @@
     </div>
 </template>
 <script setup lang="ts">
-const playerA = defineModel('playerA');
-const playerB = defineModel('palyerB');
+const playerA = defineModel<string>('playerA');
+const playerB = defineModel<string>('playerB');
 const emit = defineEmits<{
     start: [boolean];
 }>();
