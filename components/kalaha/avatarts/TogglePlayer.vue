@@ -4,13 +4,13 @@
             <div v-if="hasWinner === 'a' || currentPlayer === 'a'" class="absolute flex mt-6">
                 <KalahaAvatartsPlayerA />
                 <div v-show="!hasWinner"
-                     class="pop type-a bg-white border border-orange-400 h-fit py-3 px-6 rounded-md font-mono">
+                     class="pop type-a bg-white border border-orange-400 h-fit py-3 px-6 rounded-md">
                     It's your turn, <b>{{ playerName.a }}</b>
                 </div>
             </div>
             <div v-else-if="hasWinner === 'b' || currentPlayer === 'b'" class="absolute flex mt-6 right-0">
                 <div v-show="!hasWinner"
-                     class="pop type-b bg-white border border-blue-400 h-fit py-3 px-6 rounded-md font-mono">
+                     class="pop type-b bg-white border border-blue-400 h-fit py-3 px-6 rounded-md">
                     It's your turn, <b>{{ playerName.b }}</b>
                 </div>
                 <KalahaAvatartsPlayerB />

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="font-xmas text-xl">
         <KalahaPlatform />
     </div>
 </template>

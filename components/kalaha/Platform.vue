@@ -22,50 +22,10 @@
 </template>
 <script setup lang="ts">
 import type { EmitSelectedPayloadType, PlayerBoardData, PlayerType } from './types';
+import { useKalahaPlatform } from './composables/useKalahaPlatform';
+const { first, second, hasStarted, currentPlayer, stonesPosition, playerRowA, playerRowB, pairedRows } = useKalahaPlatform();
 
-const first = ref('Player A');
-const second = ref('Player B');
-const hasStarted = ref(false);
-const STONES_PER_PIT = 4;
-const currentPlayer = ref<PlayerType>('a');
 provide('currentPlayer', currentPlayer);
-
-const stonesPosition = reactive<PlayerBoardData>({
-    1: STONES_PER_PIT,
-    2: STONES_PER_PIT,
-    3: STONES_PER_PIT,
-    4: STONES_PER_PIT,
-    5: STONES_PER_PIT,
-    6: STONES_PER_PIT,
-    7: 0, // store of A
-    8: STONES_PER_PIT,
-    9: STONES_PER_PIT,
-    10: STONES_PER_PIT,
-    11: STONES_PER_PIT,
-    12: STONES_PER_PIT,
-    13: STONES_PER_PIT,
-    14: 0 // store of B
-});
-
-const pairedRows = [
-    [1, 13],
-    [2, 12],
-    [3, 11],
-    [4, 10],
-    [5, 9],
-    [6, 8],
-    [7, 14] // stores
-];
-
-const playerRowA = computed(() => {
-    const arrayA = Object.entries(stonesPosition).slice(0, 7);
-    return Object.fromEntries(arrayA);
-});
-
-const playerRowB = computed(() => {
-    const arrayB = Object.entries(stonesPosition).slice(7);
-    return Object.fromEntries(arrayB);
-});
 
 const selectedPit = ref<EmitSelectedPayloadType | null>(null);
 const lastPit = ref(0);
@@ -74,7 +34,10 @@ const stonesUi = computed(() => Array.from({ length: stonesInHand.value }));
 const playCount = ref(0);
 const hasWinner = ref<PlayerType | null>(null);
 
-const _handleRotation = async (selectedPit: `${number}`, gameOverCheck?: () => PlayerType | null) => {
+const _handleRotation = async (
+    selectedPit: `${number}`,
+    gameOverCheck?: () => void,
+) => {
     // Hold stones in hand.
     stonesInHand.value = stonesPosition[selectedPit];
     // Empty pit where you pick up stones.
@@ -88,7 +51,7 @@ const _handleRotation = async (selectedPit: `${number}`, gameOverCheck?: () => P
         if (stonesInHand.value === 0) {
             clearInterval(timer);
             if (gameOverCheck) {
-                hasWinner.value = gameOverCheck();
+                gameOverCheck();
             }
 
             return;
@@ -125,7 +88,7 @@ const _findPairPit = () => {
     return null;
 };
 
-const _isFinishInStore = () => {
+const _isEndedUpInStore = () => {
     return lastPit.value === 7 || lastPit.value === 14;
 };
 
@@ -177,7 +140,7 @@ watch(stonesInHand, (val) => {
     if (val === 0) {
         // When the player finishes placing stone,
         // check if the last stone was placed in an empty pit.
-        if (!_isFinishInStore() && _isEligibleToTakeOppoinentStones()) {
+        if (!_isEndedUpInStore() && _isEligibleToTakeOppoinentStones()) {
             console.log('Take opponents stones');
             const check = _checkIfYouTakeOpponentStones();
             console.log(`take this pit: ${check}`);
@@ -192,19 +155,51 @@ const _checkIfRowIsEmpty = () => {
     const rowA = Object.values(playerRowA.value).slice(0, 6);
     const rowB = Object.values(playerRowB.value).slice(0, 6);
 
-    const isFinish = !(rowA.some(stonesInPit => stonesInPit !== 0) && rowB.some(stonesInPit => stonesInPit !== 0));
-    if (isFinish) {
-        return stonesPosition['7'] > stonesPosition['14'] ? 'a' : 'b';
+    return !(rowA.some(stonesInPit => stonesInPit !== 0) && rowB.some(stonesInPit => stonesInPit !== 0));
+};
+
+const _handleGameOver = () => {
+    const res = _checkIfRowIsEmpty();
+
+    let totalA = 0;
+    let totalB = 0;
+    let result = null;
+
+    if (res) {
+        totalA = Object.values(playerRowA.value).reduce((total, stones) => total + stones, 0);
+        totalB = Object.values(playerRowB.value).reduce((total, stones) => total + stones, 0);
+
+        result = totalA > totalB ? 'a' : 'b' as PlayerType;
+
+        // Prepare for the final result.
+        stonesPosition['7'] = 0;
+        stonesPosition['14'] = 0;
     }
 
-    return null;
+    // Count up the final result in the UI.
+    const timer = setInterval(() => {
+        if (totalA > 0) {
+            stonesPosition['7'] += 1;
+            totalA--;
+        }
+
+        if (totalB > 0) {
+            stonesPosition['14'] += 1;
+            totalB--;
+        }
+
+        if (!(totalA || totalB)) {
+            clearInterval(timer);
+            hasWinner.value = result;
+        }
+    }, 300);
 };
 
 const run = async ({ pitPosition }: EmitSelectedPayloadType) => {
     if (playCount.value < 1) {
         _handleRotation(pitPosition);
     } else {
-        _handleRotation(pitPosition, _checkIfRowIsEmpty);
+        _handleRotation(pitPosition, _handleGameOver);
     }
     playCount.value++;
 };
